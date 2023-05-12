@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "View past actions performed in the admin panel and not only.",
   "strapi": {
-    "name": "Audit Log",
+    "name": "audit-log",
     "description": "View past actions performed in the admin panel and not only.",
-    "kind": "plugin"
+    "kind": "plugin",
+    "displayName": "Audit Log"
   },
   "dependencies": {
     "@strapi/design-system": "^1.6.3",
