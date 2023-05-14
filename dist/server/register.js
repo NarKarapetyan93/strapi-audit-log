@@ -26,10 +26,98 @@ const addMissingFiles = () => {
     const strapiServerPath = path_1.default.resolve(contentManagerPath, `strapi-server.${isStrapiProjectUsingTS() ? 'ts' : 'js'}`);
     if (!fs_1.default.existsSync(strapiServerPath)) {
         if (isStrapiProjectUsingTS()) {
-            fs_1.default.writeFileSync(strapiServerPath, `export default(e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,o=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=o(e);return e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=o(e);return e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=o(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e});`);
+            fs_1.default.writeFileSync(strapiServerPath, `
+export default (plugin) => {
+  const createMethod = plugin.controllers['collection-types'].create;
+  const updateMethod = plugin.controllers['collection-types'].update;
+  const deleteMethod = plugin.controllers['collection-types'].delete;
+
+  const getUser = (ctx) => {
+    return ctx.state?.user;
+  }
+
+  plugin.controllers['collection-types'].create = async (ctx) => {
+    const user = getUser(ctx);
+    ctx.request.body.actionBy = user.id;
+    return await createMethod(ctx);
+  }
+
+  plugin.controllers['collection-types'].update = async (ctx) => {
+    const user = getUser(ctx);
+    ctx.request.body.actionBy = user.id;
+    return await updateMethod(ctx);
+  }
+
+  plugin.controllers['collection-types'].delete = async (ctx) => {
+    const user = getUser(ctx);
+
+    await strapi.plugin('audit-log').service('auditService').create({
+      date: new Date(),
+      user: user,
+      collection: ctx.request.params.model,
+      collectionAffectedId: ctx.request.params.id,
+      action: 'delete',
+      params: {
+        where: {
+          id: ctx.request.params.id
+        },
+      },
+    });
+
+    return deleteMethod(ctx);
+  }
+
+  return plugin;
+}
+
+      `);
         }
         else {
-            fs_1.default.writeFileSync(strapiServerPath, `module.exports=e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,o=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=o(e);return e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=o(e);return e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=o(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e};`);
+            fs_1.default.writeFileSync(strapiServerPath, `
+      module.exports = (plugin) => {
+  const createMethod = plugin.controllers['collection-types'].create;
+  const updateMethod = plugin.controllers['collection-types'].update;
+  const deleteMethod = plugin.controllers['collection-types'].delete;
+
+  const getUser = (ctx) => {
+    return ctx.state?.user;
+  }
+
+  plugin.controllers['collection-types'].create = async (ctx) => {
+    const user = getUser(ctx);
+    ctx.request.body.actionBy = user.id;
+    return await createMethod(ctx);
+  }
+
+  plugin.controllers['collection-types'].update = async (ctx) => {
+    const user = getUser(ctx);
+    ctx.request.body.actionBy = user.id;
+    return await updateMethod(ctx);
+  }
+
+  plugin.controllers['collection-types'].delete = async (ctx) => {
+    const user = getUser(ctx);
+
+    await strapi.plugin('audit-log').service('auditService').create({
+      date: new Date(),
+      user: user,
+      collection: ctx.request.params.model,
+      collectionAffectedId: ctx.request.params.id,
+      action: 'delete',
+      params: {
+        where: {
+          id: ctx.request.params.id
+        },
+      },
+    });
+
+    return deleteMethod(ctx);
+  }
+
+  return plugin;
+}
+
+      `);
         }
     }
 };

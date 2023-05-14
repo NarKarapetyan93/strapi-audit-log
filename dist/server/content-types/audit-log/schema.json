@@ -31,7 +31,7 @@
             "required": true
         },
         "collectionAffectedId": {
-            "type": "integer"
+            "type": "string"
         },
         "action": {
             "type": "string",
