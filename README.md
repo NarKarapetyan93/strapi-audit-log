@@ -28,7 +28,7 @@ module.exports = {
 ```
 
 ## Changelog
-### 1.0.0
+### 1.0.0-realease
 - Added support for Strapi v4
 - Added support for filtering
 - Fixed pagination issue
