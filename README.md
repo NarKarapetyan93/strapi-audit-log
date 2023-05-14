@@ -27,7 +27,15 @@ module.exports = {
 }
 ```
 
+## Upcoming Features
+- Filtering
+- Sorting
+
 ## Changelog
+### 0.0.4
+- Added permissions for admin users
+- Fixed frontend freezing issues
+
 ### 0.0.3
 - Added support of pagination
 - Fixed frontend issues
