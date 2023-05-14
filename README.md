@@ -32,6 +32,9 @@ module.exports = {
 - Sorting
 
 ## Changelog
+### 0.0.5
+- Fixed bulk-delete issue
+
 ### 0.0.4
 - Added permissions for admin users
 - Fixed frontend freezing issues
