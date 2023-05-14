@@ -26,98 +26,10 @@ const addMissingFiles = () => {
     const strapiServerPath = path_1.default.resolve(contentManagerPath, `strapi-server.${isStrapiProjectUsingTS() ? 'ts' : 'js'}`);
     if (!fs_1.default.existsSync(strapiServerPath)) {
         if (isStrapiProjectUsingTS()) {
-            fs_1.default.writeFileSync(strapiServerPath, `
-export default (plugin) => {
-  const createMethod = plugin.controllers['collection-types'].create;
-  const updateMethod = plugin.controllers['collection-types'].update;
-  const deleteMethod = plugin.controllers['collection-types'].delete;
-
-  const getUser = (ctx) => {
-    return ctx.state?.user;
-  }
-
-  plugin.controllers['collection-types'].create = async (ctx) => {
-    const user = getUser(ctx);
-    ctx.request.body.actionBy = user.id;
-    return await createMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].update = async (ctx) => {
-    const user = getUser(ctx);
-    ctx.request.body.actionBy = user.id;
-    return await updateMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].delete = async (ctx) => {
-    const user = getUser(ctx);
-
-    await strapi.plugin('audit-log').service('auditService').create({
-      date: new Date(),
-      user: user,
-      collection: ctx.request.params.model,
-      collectionAffectedId: ctx.request.params.id,
-      action: 'delete',
-      params: {
-        where: {
-          id: ctx.request.params.id
-        },
-      },
-    });
-
-    return deleteMethod(ctx);
-  }
-
-  return plugin;
-}
-
-      `);
+            fs_1.default.writeFileSync(strapiServerPath, `export default(e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,a=e.controllers["collection-types"].bulkDelete,o=e.controllers["single-types"].createOrUpdate,c=e.controllers["single-types"].delete,s=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=s(e);return e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=s(e);return e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=s(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e.controllers["collection-types"].bulkDelete=async e=>{let t=s(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:JSON.stringify(e.request.body.ids),action:"bulk delete",params:{where:{id:{$in:e.request.body.ids}}}}),await a(e)},e.controllers["single-types"].createOrUpdate=async e=>{let t=s(e);return e.request.body.actionBy=t.id,await o(e)},e.controllers["single-types"].delete=async e=>{let t=s(e),[l]=await strapi.query(e.request.params.model).findMany();return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:l.id,action:"delete",params:{where:{id:e.request.params.id}}}),c(e)},e});`);
         }
         else {
-            fs_1.default.writeFileSync(strapiServerPath, `
-      module.exports = (plugin) => {
-  const createMethod = plugin.controllers['collection-types'].create;
-  const updateMethod = plugin.controllers['collection-types'].update;
-  const deleteMethod = plugin.controllers['collection-types'].delete;
-
-  const getUser = (ctx) => {
-    return ctx.state?.user;
-  }
-
-  plugin.controllers['collection-types'].create = async (ctx) => {
-    const user = getUser(ctx);
-    ctx.request.body.actionBy = user.id;
-    return await createMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].update = async (ctx) => {
-    const user = getUser(ctx);
-    ctx.request.body.actionBy = user.id;
-    return await updateMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].delete = async (ctx) => {
-    const user = getUser(ctx);
-
-    await strapi.plugin('audit-log').service('auditService').create({
-      date: new Date(),
-      user: user,
-      collection: ctx.request.params.model,
-      collectionAffectedId: ctx.request.params.id,
-      action: 'delete',
-      params: {
-        where: {
-          id: ctx.request.params.id
-        },
-      },
-    });
-
-    return deleteMethod(ctx);
-  }
-
-  return plugin;
-}
-
-      `);
+            fs_1.default.writeFileSync(strapiServerPath, `module.exports=e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,o=e.controllers["collection-types"].bulkDelete,a=e.controllers["single-types"].createOrUpdate,c=e.controllers["single-types"].delete,s=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=s(e);return e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=s(e);return e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=s(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e.controllers["collection-types"].bulkDelete=async e=>{let t=s(e);return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:JSON.stringify(e.request.body.ids),action:"bulk delete",params:{where:{id:{$in:e.request.body.ids}}}}),await o(e)},e.controllers["single-types"].createOrUpdate=async e=>{let t=s(e);return e.request.body.actionBy=t.id,await a(e)},e.controllers["single-types"].delete=async e=>{let t=s(e),[l]=await strapi.query(e.request.params.model).findMany();return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:l.id,action:"delete",params:{where:{id:e.request.params.id}}}),c(e)},e};`);
         }
     }
 };

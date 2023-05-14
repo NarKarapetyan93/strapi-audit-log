@@ -10,7 +10,6 @@ const name = "Audit Log";
 
 export default {
   register(app: any) {
-    console.log(auth.getUserInfo());
     app.addMenuLink({
       to: `/plugins/${pluginId}`,
       icon: PluginIcon,

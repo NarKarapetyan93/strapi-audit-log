@@ -16,12 +16,39 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * Promise to fetch all audit logs.
    * @return {Promise}
    */
-  findMany(params) {
-    return strapi.query('plugin::audit-log.audit-log').findMany({
-      where: params,
+  async findMany(params) {
+    const {
+      pagination = {}
+    } = params
+
+    const queryParams = {
+      orderBy: {
+        date: 'desc'
+      },
       populate: ['user'],
-      orderBy: { date: 'desc' },
-    });
+    }
+
+    if (pagination.pageSize) {
+      queryParams['limit'] = parseInt(pagination.pageSize)
+    }
+
+    if (pagination.page) {
+      queryParams['offset'] = (parseInt(pagination.page) - 1) * parseInt(pagination.pageSize)
+    }
+
+    const count = await strapi.query('plugin::audit-log.audit-log').count();
+
+    const data = await strapi.query('plugin::audit-log.audit-log').findMany(queryParams);
+
+    return {
+      data,
+      pagination: {
+        pageSize: parseInt(pagination.pageSize),
+        page: parseInt(pagination.page),
+        pageCount: Math.ceil(count / parseInt(pagination.pageSize)),
+        total: count
+      }
+    };
   },
 
   /**

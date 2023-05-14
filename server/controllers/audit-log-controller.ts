@@ -7,7 +7,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * @return {Object}
    */
   getAuditLogs: async (ctx) => {
-    const templates = await strapi.plugin('audit-log').service('auditService').findMany();
+    const templates = await strapi.plugin('audit-log').service('auditService').findMany(ctx.request.query);
     ctx.send(templates);
   },
 
