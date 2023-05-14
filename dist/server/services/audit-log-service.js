@@ -16,20 +16,32 @@ exports.default = ({ strapi }) => ({
      * @return {Promise}
      */
     async findMany(params) {
-        const { pagination = {} } = params;
+        const { pagination = {}, sort = {}, filters = {}, } = params;
         const queryParams = {
-            orderBy: {
-                date: 'desc'
-            },
             populate: ['user'],
         };
+        if (sort && sort.hasOwnProperty('field') && sort.hasOwnProperty('order')) {
+            queryParams['orderBy'] = {
+                [sort.field]: sort.order
+            };
+        }
+        else {
+            queryParams['orderBy'] = {
+                date: 'desc'
+            };
+        }
+        if (filters && Object.keys(filters).length > 0) {
+            queryParams['where'] = filters;
+        }
         if (pagination.pageSize) {
             queryParams['limit'] = parseInt(pagination.pageSize);
         }
         if (pagination.page) {
             queryParams['offset'] = (parseInt(pagination.page) - 1) * parseInt(pagination.pageSize);
         }
-        const count = await strapi.query('plugin::audit-log.audit-log').count();
+        const count = await strapi.query('plugin::audit-log.audit-log').count({
+            ...(queryParams.hasOwnProperty('where') && { where: queryParams['where'] })
+        });
         const data = await strapi.query('plugin::audit-log.audit-log').findMany(queryParams);
         return {
             data,

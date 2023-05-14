@@ -1,28 +1,40 @@
 import { Strapi } from '@strapi/strapi';
 
 export default ({ strapi }: { strapi: Strapi }) => ({
+  getContentTypes: async (ctx) => {
+    const models = [];
+
+    Object.values(strapi.contentTypes).map(async (contentType: any) => {
+      if(contentType.uid.includes('api::')) {
+        models.push(contentType);
+      }
+    });
+
+    ctx.send(models);
+  },
+
   /**
-   * Get template design action.
+   * Get auditLog design action.
    *
    * @return {Object}
    */
   getAuditLogs: async (ctx) => {
-    const templates = await strapi.plugin('audit-log').service('auditService').findMany(ctx.request.query);
-    ctx.send(templates);
+    const auditLogs = await strapi.plugin('audit-log').service('auditService').findMany(ctx.request.query);
+    ctx.send(auditLogs);
   },
 
   /**
-   * Get template design action.
+   * Get auditLog design action.
    *
    * @return {Object}
    */
   getAuditLog: async (ctx) => {
-    const template = await strapi.plugin('audit-log').service('auditService').findOne({ id: ctx.params.id });
-    ctx.send(template);
+    const auditLog = await strapi.plugin('audit-log').service('auditService').findOne({ id: ctx.params.id });
+    ctx.send(auditLog);
   },
 
   /**
-   * Delete template design action.
+   * Delete auditLog design action.
    *
    * @return {Object}
    */
@@ -32,14 +44,14 @@ export default ({ strapi }: { strapi: Strapi }) => ({
   },
 
   /**
-   * Save template design action.
+   * Save auditLog design action.
    *
    * @return {Object}
    */
   saveAuditLog: async (ctx) => {
     try {
-      const template = await strapi.plugin('audit-log').service('auditService').create(ctx.request.body);
-      ctx.send(template || {});
+      const auditLog = await strapi.plugin('audit-log').service('auditService').create(ctx.request.body);
+      ctx.send(auditLog || {});
     } catch (error) {
       ctx.badRequest(null, error);
     }

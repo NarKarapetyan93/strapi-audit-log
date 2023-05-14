@@ -38,11 +38,11 @@ exports.default = async ({ strapi }) => {
                 }
             }
             else if (action === 'bulk delete') {
-                const inParams = params.where.$and.find((p) => { var _a; return (_a = p === null || p === void 0 ? void 0 : p.id) === null || _a === void 0 ? void 0 : _a.$in; });
+                const inParams = params.where.hasOwnProperty('$and') ? params.where.$and.find((p) => p.hasOwnProperty('id') && p.id.hasOwnProperty('$in')) : null;
                 const record = await strapi.plugin('audit-log').service('auditService').findOne({
                     action: 'bulk delete',
                     collection: model.uid,
-                    collectionAffectedId: JSON.stringify(inParams.id.$in),
+                    ...(inParams && { collectionAffectedId: JSON.stringify(inParams.id.$in) }),
                 });
                 if (!record) {
                     await strapi.plugin('audit-log').service('auditService').create({

@@ -42,7 +42,7 @@ export default async ({ strapi }) => {
           });
         }
       } else if(action === 'bulk delete') {
-        const inParams = params.where?.$and?.find((p) => p?.id?.$in);
+        const inParams = params.where.hasOwnProperty('$and') ? params.where.$and.find((p) => p.hasOwnProperty('id') && p.id.hasOwnProperty('$in')) : null;
         const record = await strapi.plugin('audit-log').service('auditService').findOne({
           action: 'bulk delete',
           collection: model.uid,

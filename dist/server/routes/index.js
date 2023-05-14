@@ -11,6 +11,11 @@ exports.default = [
     },
     {
         method: 'GET',
+        path: '/content-types',
+        handler: 'auditController.getContentTypes',
+    },
+    {
+        method: 'GET',
         path: '/:id',
         handler: 'auditController.getAuditLog',
         config: {

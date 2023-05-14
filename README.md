@@ -27,11 +27,12 @@ module.exports = {
 }
 ```
 
-## Upcoming Features
-- Filtering
-- Sorting
-
 ## Changelog
+### 1.0.0
+- Added support for Strapi v4
+- Added support for filtering
+- Fixed pagination issue
+
 ### 0.0.5
 - Fixed bulk-delete issue
 
