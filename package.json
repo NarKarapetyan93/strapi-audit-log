@@ -2,6 +2,14 @@
   "name": "logismiko-strapi-audit-log",
   "version": "0.0.3",
   "description": "View past actions performed in the admin panel and not only.",
+  "keywords": [
+    "strapi",
+    "strapi-plugin",
+    "audit",
+    "log",
+    "admin",
+    "panel"
+  ],
   "strapi": {
     "name": "audit-log",
     "description": "View past actions performed in the admin panel and not only.",
