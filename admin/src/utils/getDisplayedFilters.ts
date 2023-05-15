@@ -1,7 +1,7 @@
 import ComboboxFilter from '../components/ComboboxFilter';
 import { getDefaultMessage, actionTypes } from './getActionTypesDefaultMessages';
 
-const customOperators = [
+const simpleOperators = [
   {
     intlLabel: { id: 'components.FilterOptions.FILTER_TYPES.$eq', defaultMessage: 'is' },
     value: '$eq',
@@ -10,6 +10,18 @@ const customOperators = [
     intlLabel: { id: 'components.FilterOptions.FILTER_TYPES.$ne', defaultMessage: 'is not' },
     value: '$ne',
   },
+];
+
+const userOperators = [
+  ...simpleOperators,
+  {
+    intlLabel: { id: 'components.FilterOptions.FILTER_TYPES.$null', defaultMessage: 'is null' },
+    value: '$null',
+  },
+  {
+    intlLabel: { id: 'components.FilterOptions.FILTER_TYPES.$notNull', defaultMessage: 'is not null' },
+    value: '$notNull',
+  }
 ];
 
 const getDisplayedFilters = ({ users, contentTypes }: any) => {
@@ -24,7 +36,7 @@ const getDisplayedFilters = ({ users, contentTypes }: any) => {
     {
       name: 'action',
       metadatas: {
-        customOperators,
+        customOperators: simpleOperators,
         label: 'Action',
         options: actionOptions,
         customInput: ComboboxFilter,
@@ -64,7 +76,7 @@ const getDisplayedFilters = ({ users, contentTypes }: any) => {
     userFilter = {
       name: 'user',
       metadatas: {
-        customOperators,
+        customOperators: userOperators,
         label: 'User',
         options: userOptions,
         customInput: ComboboxFilter,
@@ -75,7 +87,6 @@ const getDisplayedFilters = ({ users, contentTypes }: any) => {
 
   let contentTypeFilter = null;
   if(contentTypes) {
-    console.log(contentTypes);
     const contentTypeOptions = contentTypes.map((contentType: any) => {
       return {
         label: contentType.globalId,
@@ -85,7 +96,7 @@ const getDisplayedFilters = ({ users, contentTypes }: any) => {
     contentTypeFilter = {
       name: 'collection',
       metadatas: {
-        customOperators,
+        customOperators: simpleOperators,
         label: 'Collection',
         options: contentTypeOptions,
         customInput: ComboboxFilter,

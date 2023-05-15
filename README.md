@@ -27,7 +27,15 @@ module.exports = {
 }
 ```
 
+This plugin only visible for users with `Super Admin` role. However, if you want to give access to other users, you can add `read` permissions to the `Editor` and `Author` roles too, by visiting `Setting -> Roles -> YOUR PREFFERED ROLE -> Plugins -> Audit-log` and enable checkbox inf front of `read` permission.
+
 ## Changelog
+### 1.0.1
+- Fixed filtering issue
+- Added additional conditions to filters
+- Added search functionality
+- Added sorting functionality by columns
+
 ### 1.0.0-realease
 - Added support for Strapi v4
 - Added support for filtering

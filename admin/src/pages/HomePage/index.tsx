@@ -5,24 +5,10 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {ActionLayout, HeaderLayout, ContentLayout, Main} from '@strapi/design-system';
-import {
-  EmptyStateLayout,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Td,
-  Th,
-  Typography,
-  VisuallyHidden,
-  IconButton
-} from '@strapi/design-system';
-import {LoadingIndicatorPage, CheckPermissions} from '@strapi/helper-plugin';
-import dayjs from "dayjs";
+import {ActionLayout, HeaderLayout, ContentLayout, Main, EmptyStateLayout} from '@strapi/design-system';
+import {LoadingIndicatorPage, CheckPermissions, DynamicTable, SearchURLQuery} from '@strapi/helper-plugin';
 import apiRequest from "../../api/api";
 import Modal from "../../components/Modal";
-import {Eye} from "@strapi/icons";
 import permissions from "../../permissions";
 import {useQueryParams} from '@strapi/helper-plugin';
 import {IParams} from "../../interfaces/IParams";
@@ -31,6 +17,8 @@ import {PaginationFooter} from "../../components/PaginationFooter/index.";
 import getDisplayedFilters from "../../utils/getDisplayedFilters";
 import Filters from "../../components/Filters";
 import {useFetchClient} from '@strapi/helper-plugin';
+import {TableRows} from "../../components/TableRows";
+import headers from '../../utils/tableHeaders';
 
 const HomePage = () => {
   const {get} = useFetchClient();
@@ -49,7 +37,6 @@ const HomePage = () => {
   const [{query}] = useQueryParams();
 
   useEffect(() => {
-    console.log(query);
     const params: IParams = {
       pagination: {
         page: 1,
@@ -57,7 +44,9 @@ const HomePage = () => {
         pageCount: 10,
         total: 0
       },
-      filters: {}
+      filters: {},
+      sort: {},
+      _q: ''
     };
 
     if (query?.page) {
@@ -72,6 +61,18 @@ const HomePage = () => {
       params.filters = query.filters;
     }
 
+    if(query?.sort) {
+      const [field, order] = query.sort.split(':');
+      params.sort = {
+        field,
+        order
+      }
+    }
+
+    if(query?._q) {
+      params._q = query._q;
+    }
+
     apiRequest.getLogs(params).then((res) => {
       setLogs(res.data.data);
       setIsLoading(false);
@@ -81,7 +82,6 @@ const HomePage = () => {
     get(`/admin/users`).then((res: any) => {
       const users = res.data.data;
       apiRequest.getContentTypes().then((res: any) => {
-        console.log(res.data);
         const contentTypes = res.data;
         const df = getDisplayedFilters({users, contentTypes});
         setDisplayedFilters(df);
@@ -109,58 +109,26 @@ const HomePage = () => {
             subtitle="View past history of your actions"
             as="h2"
           />
-          {displayedFilters.length > 0 && <ActionLayout startActions={<Filters displayedFilters={displayedFilters}/>}/>}
-          {logs.length === 0 && <EmptyStateLayout content="You don't have any logs yet..."/>}
+          {displayedFilters.length > 0 && <ActionLayout startActions={<><SearchURLQuery label='Search'/><Filters displayedFilters={displayedFilters}/></>}/>}
+          {logs.length === 0 &&
+            <ContentLayout>
+              <EmptyStateLayout content="You don't have any logs yet..."/>
+            </ContentLayout>}
           {logs.length > 0 && (
             <ContentLayout>
-              <Table colCount={5} rowCount={10}>
-                <Thead>
-                  <Tr>
-                    <Th>
-                      <Typography variant="sigma">Date</Typography>
-                    </Th>
-                    <Th>
-                      <Typography variant="sigma">User</Typography>
-                    </Th>
-                    <Th>
-                      <Typography variant="sigma">Action</Typography>
-                    </Th>
-                    <Th>
-                      <Typography variant="sigma">Collection</Typography>
-                    </Th>
-                    <Th>
-                      <VisuallyHidden>Actions</VisuallyHidden>
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {
-                    logs.map((log: any, index) => {
-                      return (
-                        <Tr key={index}>
-                          <Td>
-                            <Typography
-                              textColor="neutral800">{dayjs(log.date).format('YYYY-MM-DD HH:mm:ss')}</Typography>
-                          </Td>
-                          <Td>
-                            <Typography
-                              textColor="neutral800">{log.user ? `${log?.user?.firstname} ${log?.user?.lastname}` : 'External Change'}</Typography>
-                          </Td>
-                          <Td>
-                            <Typography textColor="neutral800">{log.action.toUpperCase()}</Typography>
-                          </Td>
-                          <Td>
-                            <Typography textColor="neutral800">{log.collection}</Typography>
-                          </Td>
-                          <Td>
-                            <IconButton onClick={() => handleModal(log.id)} label="View" icon={<Eye/>}/>
-                          </Td>
-                        </Tr>
-                      )
-                    })
-                  }
-                </Tbody>
-              </Table>
+              <DynamicTable
+                contentType="Audit logs"
+                headers={headers}
+                rows={logs || []}
+                withBulkActions
+                isLoading={isLoading}
+              >
+                <TableRows
+                  headers={headers}
+                  rows={logs || []}
+                  handleModal={(id: any) => handleModal(id)}
+                />
+              </DynamicTable>
               <PaginationFooter pagination={pagination}/>
             </ContentLayout>
           )}
