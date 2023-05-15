@@ -24,113 +24,12 @@ const addMissingFiles = () => {
 
   // Create strapi server file if not exists
   const strapiServerPath = path.resolve(contentManagerPath, `strapi-server.${isStrapiProjectUsingTS() ? 'ts' : 'js'}`);
-  const contentManagerContent = `
-  const createMethod = plugin.controllers['collection-types'].create;
-  const updateMethod = plugin.controllers['collection-types'].update;
-  const deleteMethod = plugin.controllers['collection-types'].delete;
-  const bulkDeleteMethod = plugin.controllers['collection-types'].bulkDelete;
 
-  const createOrUpdateSingleTypesMethod = plugin.controllers['single-types'].createOrUpdate;
-  const deleteSingleTypeMethod = plugin.controllers['single-types'].delete;
-
-  const getUser = (ctx) => {
-    return ctx.state?.user;
-  }
-
-  plugin.controllers['collection-types'].create = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('CT: Create');
-    console.log(user);
-    ctx.request.body.actionBy = user.id;
-    return await createMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].update = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('CT: Update');
-    console.log(user);
-    ctx.request.body.actionBy = user.id;
-    return await updateMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].delete = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('CT: Delete');
-    console.log(user);
-    await strapi.plugin('audit-log').service('auditService').create({
-      date: new Date(),
-      user: user,
-      collection: ctx.request.params.model,
-      collectionAffectedId: ctx.request.params.id,
-      action: 'delete',
-      params: {
-        where: {
-          id: ctx.request.params.id
-        },
-      },
-    });
-
-    return deleteMethod(ctx);
-  }
-
-  plugin.controllers['collection-types'].bulkDelete = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('CT: Bulk Delete');
-    console.log(user);
-    await strapi.plugin('audit-log').service('auditService').create({
-      date: new Date(),
-      user: user,
-      collection: ctx.request.params.model,
-      collectionAffectedId: JSON.stringify(ctx.request.body.ids),
-      action: 'bulk delete',
-      params: {
-        where: {
-          id: {
-            $in: ctx.request.body.ids
-          }
-        },
-      },
-    });
-
-    return await bulkDeleteMethod(ctx);
-  }
-
-  plugin.controllers['single-types'].createOrUpdate = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('ST: Create/Update');
-    console.log(user);
-    ctx.request.body.actionBy = user.id;
-    return await createOrUpdateSingleTypesMethod(ctx);
-  }
-
-  plugin.controllers['single-types'].delete = async (ctx) => {
-    const user = getUser(ctx);
-    console.log('ST: Delete');
-    console.log(user);
-    const [singleType] = await strapi.query(ctx.request.params.model).findMany();
-    await strapi.plugin('audit-log').service('auditService').create({
-      date: new Date(),
-      user: user,
-      collection: ctx.request.params.model,
-      collectionAffectedId: singleType.id,
-      action: 'delete',
-      params: {
-        where: {
-          id: ctx.request.params.id
-        },
-      },
-    });
-
-    return deleteSingleTypeMethod(ctx);
-  }
-
-  return plugin;
-  `
   if (!fs.existsSync(strapiServerPath)) {
     if (isStrapiProjectUsingTS()) {
-      fs.writeFileSync(strapiServerPath, `export default (plugin) => {${contentManagerContent}}`);
+      fs.writeFileSync(strapiServerPath, `export default(e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,o=e.controllers["collection-types"].bulkDelete,a=e.controllers["single-types"].createOrUpdate,c=e.controllers["single-types"].delete,s=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=s(e);return console.log("CT: Create"),console.log(l),e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=s(e);return console.log("CT: Update"),console.log(t),e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=s(e);return console.log("CT: Delete"),console.log(t),await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e.controllers["collection-types"].bulkDelete=async e=>{let t=s(e);return console.log("CT: Bulk Delete"),console.log(t),await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:JSON.stringify(e.request.body.ids),action:"bulk delete",params:{where:{id:{$in:e.request.body.ids}}}}),await o(e)},e.controllers["single-types"].createOrUpdate=async e=>{let t=s(e);return console.log("ST: Create/Update"),console.log(t),e.request.body.actionBy=t.id,await a(e)},e.controllers["single-types"].delete=async e=>{let t=s(e);console.log("ST: Delete"),console.log(t);let[l]=await strapi.query(e.request.params.model).findMany();return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:l.id,action:"delete",params:{where:{id:e.request.params.id}}}),c(e)},e});`);
     } else {
-      fs.writeFileSync(strapiServerPath, `module.exports = (plugin) => {${contentManagerContent}}`);
+      fs.writeFileSync(strapiServerPath, `module.exports=e=>{let t=e.controllers["collection-types"].create,l=e.controllers["collection-types"].update,r=e.controllers["collection-types"].delete,o=e.controllers["collection-types"].bulkDelete,a=e.controllers["single-types"].createOrUpdate,c=e.controllers["single-types"].delete,s=e=>e.state?.user;return e.controllers["collection-types"].create=async e=>{let l=s(e);return console.log("CT: Create"),console.log(l),e.request.body.actionBy=l.id,await t(e)},e.controllers["collection-types"].update=async e=>{let t=s(e);return console.log("CT: Update"),console.log(t),e.request.body.actionBy=t.id,await l(e)},e.controllers["collection-types"].delete=async e=>{let t=s(e);return console.log("CT: Delete"),console.log(t),await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:e.request.params.id,action:"delete",params:{where:{id:e.request.params.id}}}),r(e)},e.controllers["collection-types"].bulkDelete=async e=>{let t=s(e);return console.log("CT: Bulk Delete"),console.log(t),await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:JSON.stringify(e.request.body.ids),action:"bulk delete",params:{where:{id:{$in:e.request.body.ids}}}}),await o(e)},e.controllers["single-types"].createOrUpdate=async e=>{let t=s(e);return console.log("ST: Create/Update"),console.log(t),e.request.body.actionBy=t.id,await a(e)},e.controllers["single-types"].delete=async e=>{let t=s(e);console.log("ST: Delete"),console.log(t);let[l]=await strapi.query(e.request.params.model).findMany();return await strapi.plugin("audit-log").service("auditService").create({date:new Date,user:t,collection:e.request.params.model,collectionAffectedId:l.id,action:"delete",params:{where:{id:e.request.params.id}}}),c(e)},e};`);
     }
   }
 }

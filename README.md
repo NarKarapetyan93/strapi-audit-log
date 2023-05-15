@@ -3,7 +3,7 @@
 This plugin allows you to log all the actions performed by the users of your application.
 Actions performed by the admin users or authenticated users are logged. For external changes if `ctx.state.user` is empty, it shows "External Change" instead of user name.
 
-> **_<span style="color:red">IMPORTANT NOTE</span>:&nbsp;_**  This plugin is overwriting Strapi's default `content-manager` plugin and automatically creates `strapi-server.js` in `./srs/extensions` folder. So if you already overwrote this file `strapi-server.js` plugin may not work properly.
+> **_<span style="color:red">IMPORTANT NOTE</span>:&nbsp;_**  This plugin is overwriting Strapi's default `content-manager` plugin and automatically creates `strapi-server.js` in `./srs/extensions` folder. So if you already overwrote this file `strapi-server.js` plugin may not work properly. For `production` mode you need to push also newly created `src/extensions/content-manager` folder to your server.
 
 ## Installation
 
@@ -30,6 +30,10 @@ module.exports = {
 This plugin only visible for users with `Super Admin` role. However, if you want to give access to other users, you can add `read` permissions to the `Editor` and `Author` roles too, by visiting `Setting -> Roles -> YOUR PREFFERED ROLE -> Plugins -> Audit-log` and enable checkbox inf front of `read` permission.
 
 ## Changelog
+
+### 1.0.3
+- Bug fixes, for production mode
+
 ### 1.0.2
 - Bug fixes
 
