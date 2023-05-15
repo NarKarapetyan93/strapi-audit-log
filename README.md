@@ -30,7 +30,7 @@ module.exports = {
 This plugin only visible for users with `Super Admin` role. However, if you want to give access to other users, you can add `read` permissions to the `Editor` and `Author` roles too, by visiting `Setting -> Roles -> YOUR PREFFERED ROLE -> Plugins -> Audit-log` and enable checkbox inf front of `read` permission.
 
 ## Changelog
-### 1.0.1
+### 1.0.1-release
 - Fixed filtering issue
 - Added additional conditions to filters
 - Added search functionality
