@@ -31,6 +31,9 @@ This plugin only visible for users with `Super Admin` role. However, if you want
 
 ## Changelog
 
+### 1.0.3-1
+- Bug fixes,updated dist folder
+
 ### 1.0.3
 - Bug fixes, for production mode
 
