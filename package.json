@@ -58,7 +58,7 @@
   "scripts": {
     "develop": "tsc -p tsconfig.server.json -w",
     "build": "tsc -p tsconfig.server.json",
-    "publish": "yarn build && npm publish"
+    "npm:publish": "yarn build && npm publish"
   },
   "license": "MIT"
 }
