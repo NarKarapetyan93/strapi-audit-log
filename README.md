@@ -30,6 +30,8 @@ module.exports = {
 This plugin only visible for users with `Super Admin` role. However, if you want to give access to other users, you can add `read` permissions to the `Editor` and `Author` roles too, by visiting `Setting -> Roles -> YOUR PREFFERED ROLE -> Plugins -> Audit-log` and enable checkbox inf front of `read` permission.
 
 ## Changelog
+### 1.0.4-1
+- Bug fixes,updated dist folder
 
 ### 1.0.4
 - Added `isLoggingDisabled` option to disable logging for specific requests. You can add manually `isLoggingDisabled: true` in your request body in `create`, `update` and `bulkDelete` actions. So it will skip logging.
