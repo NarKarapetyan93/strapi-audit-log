@@ -43,6 +43,9 @@ export default async ({ strapi }) => {
         }
       } else if(action === 'bulk delete') {
         const inParams = params.where.hasOwnProperty('$and') ? params.where.$and.find((p) => p.hasOwnProperty('id') && p.id.hasOwnProperty('$in')) : null;
+        const { data: reqBody } = params;
+        const { isLoggingDisabled = false } = reqBody;
+        if(isLoggingDisabled) return;
         const record = await strapi.plugin('audit-log').service('auditService').findOne({
           action: 'bulk delete',
           collection: model.uid,
@@ -62,7 +65,8 @@ export default async ({ strapi }) => {
         }
       } else {
         const { data: reqBody } = params;
-        const { actionBy } = reqBody;
+        const { actionBy, isLoggingDisabled = false } = reqBody;
+        if(isLoggingDisabled) return;
         await strapi.plugin('audit-log').service('auditService').create({
           date: new Date(),
           user: actionBy,

@@ -1,15 +1,41 @@
-import { prefixPluginTranslations } from '@strapi/helper-plugin';
+import {prefixPluginTranslations} from '@strapi/helper-plugin';
 
 import pluginId from './pluginId';
 import Initializer from './components/Initializer';
 import PluginIcon from './components/PluginIcon';
-import { auth } from '@strapi/helper-plugin';
 import pluginPermissions from "./permissions";
+import getTrad from "./utils/getTrad";
 
 const name = "Audit Log";
 
 export default {
   register(app: any) {
+    // app.createSettingSection(
+    //   {
+    //     id: pluginId,
+    //     intlLabel: {
+    //       id: `${pluginId}.plugin.name`,
+    //       defaultMessage: name,
+    //     },
+    //   },
+    //   [
+    //     {
+    //       id: getTrad('settings.config'),
+    //       intlLabel: {
+    //         id: getTrad('settings.config'),
+    //         defaultMessage: 'Configuration',
+    //       },
+    //       to: `/settings/${pluginId}/config`,
+    //       async Component() {
+    //         const component = await import(/* webpackChunkName: "[request]" */ './pages/ConfigPage');
+    //
+    //         return component;
+    //       },
+    //       permissions: pluginPermissions.main,
+    //     }
+    //   ]
+    // );
+
     app.addMenuLink({
       to: `/plugins/${pluginId}`,
       icon: PluginIcon,
@@ -35,15 +61,16 @@ export default {
     app.registerPlugin(plugin);
   },
 
-  bootstrap(app: any) {},
+  bootstrap(app: any) {
+  },
 
   async registerTrads(app: any) {
-    const { locales } = app;
+    const {locales} = app;
 
     const importedTrads = await Promise.all(
       (locales as any[]).map((locale) => {
         return import(`./translations/${locale}.json`)
-          .then(({ default: data }) => {
+          .then(({default: data}) => {
             return {
               data: prefixPluginTranslations(data, pluginId),
               locale,

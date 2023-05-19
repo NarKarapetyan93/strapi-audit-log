@@ -31,6 +31,10 @@ This plugin only visible for users with `Super Admin` role. However, if you want
 
 ## Changelog
 
+### 1.0.4
+- Added `isLoggingDisabled` option to disable logging for specific requests. You can add manually `isLoggingDisabled: true` in your request body in `create`, `update` and `bulkDelete` actions. So it will skip logging.
+E.G: It can be useful for `cronJobs`, if you are doing `bulkDelete`, `update` or `create` actions in your cron job, you can add `isLoggingDisabled: true` in your request body, so it will skip logging for each record and will not periodically fill your database.
+
 ### 1.0.3-1
 - Bug fixes,updated dist folder
 
