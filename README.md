@@ -3,7 +3,7 @@
 This plugin allows you to log all the actions performed by the users of your application.
 Actions performed by the admin users or authenticated users are logged. For external changes if `ctx.state.user` is empty, it shows "External Change" instead of user name.
 
-> **_<span style="color:red">IMPORTANT NOTE</span>:&nbsp;_**  This plugin is overwriting Strapi's default `content-manager` plugin and automatically creates `strapi-server.js` in `./srs/extensions` folder. So if you already overwrote this file `strapi-server.js` plugin may not work properly. For `production` mode you need to push also newly created `src/extensions/content-manager` folder to your server.
+> **_<span style="color:red">IMPORTANT NOTE</span>:&nbsp;_** If you had previous versions(below 1.1.0) installed already.You can remove `content-manager` folder from `src/extensions` aslong as new version is not overriding it anymore.
 
 ## Installation
 

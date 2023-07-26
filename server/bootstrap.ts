@@ -1,5 +1,3 @@
-import { Strapi } from '@strapi/strapi';
-
 export default async ({ strapi }) => {
   const actions = [
     {
@@ -21,55 +19,42 @@ export default async ({ strapi }) => {
   });
 
   const createAuditLog = async (event: any, action: string) => {
+    const requestState = strapi.requestContext.get()?.state;
+    const user = requestState?.user;
+
     const {model, params, result} = event;
     if(models.includes(model.uid)) {
       if(action === 'delete') {
-        const record = await strapi.plugin('audit-log').service('auditService').findOne({
-          action: 'delete',
-          collection: model.uid,
-          collectionAffectedId: params.where.id,
-        });
-
-        if(!record) {
           await strapi.plugin('audit-log').service('auditService').create({
             date: new Date(),
-            user: null,
+            user: user?.id,
             collection: model.uid,
             action: action,
             params: {
               where: params.where,
             },
           });
-        }
       } else if(action === 'bulk delete') {
-        const inParams = params.where.hasOwnProperty('$and') ? params.where.$and.find((p) => p.hasOwnProperty('id') && p.id.hasOwnProperty('$in')) : null;
+        const { data } = params;
+        const { isLoggingDisabled } = data || {};
+        if(isLoggingDisabled) return;
+
+        await strapi.plugin('audit-log').service('auditService').create({
+          date: new Date(),
+          user: user?.id,
+          collection: model.uid,
+          action: action,
+          params: {
+            where: params.where,
+          },
+        });
+      } else {
         const { data: reqBody } = params;
         const { isLoggingDisabled = false } = reqBody;
         if(isLoggingDisabled) return;
-        const record = await strapi.plugin('audit-log').service('auditService').findOne({
-          action: 'bulk delete',
-          collection: model.uid,
-          ...(inParams && { collectionAffectedId: JSON.stringify(inParams.id.$in) }),
-        });
-
-        if(!record) {
-          await strapi.plugin('audit-log').service('auditService').create({
-            date: new Date(),
-            user: null,
-            collection: model.uid,
-            action: action,
-            params: {
-              where: params.where,
-            },
-          });
-        }
-      } else {
-        const { data: reqBody } = params;
-        const { actionBy, isLoggingDisabled = false } = reqBody;
-        if(isLoggingDisabled) return;
         await strapi.plugin('audit-log').service('auditService').create({
           date: new Date(),
-          user: actionBy,
+          user: user?.id,
           collection: model.uid,
           action: action,
           collectionAffectedId: result.id,
@@ -84,7 +69,7 @@ export default async ({ strapi }) => {
   }
 
   strapi.db.lifecycles.subscribe({
-    async afterCreate(event: any) {
+    async afterCreate(event: any, ctx: any) {
       await createAuditLog(event, 'create');
     },
     async afterUpdate(event: any) {
@@ -104,8 +89,8 @@ export default async ({ strapi }) => {
     beforeCount(event: any) {},
     beforeCreate(event: any) {},
     beforeCreateMany(event: any) {},
-    beforeDelete(event: any) {},
-    beforeDeleteMany(event: any) {},
+    async beforeDelete(event: any) {},
+    async beforeDeleteMany(event: any) {},
     beforeFindMany(event: any) {},
     beforeFindOne(event: any) {},
     beforeUpdate(event: any) {},
